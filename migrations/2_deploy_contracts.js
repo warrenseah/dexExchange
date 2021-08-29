@@ -38,6 +38,12 @@ module.exports = async function (deployer, _networks, accounts) {
                 from: trader
             }
         );
+        const ticker = await token.name();
+        await dex.deposit(
+            amount,
+            web3.utils.fromAscii(ticker),
+            {from: trader}
+        );
     };
     await Promise.all(
         [dai, bat, rep, zrx].map(

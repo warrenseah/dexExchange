@@ -7,7 +7,7 @@ const DIRECTION = {
 
 function Wallet({ deposit, withdraw, user }) {
 	const [direction, setDirection] = useState(DIRECTION.DEPOSIT);
-	cont [amount, setAmount] = useState(0);
+	const [amount, setAmount] = useState(0);
 	
 	const onSubmit = (e) => {
     e.preventDefault();

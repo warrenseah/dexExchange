@@ -24,7 +24,9 @@ function Header({
                     />
                 </div>
                 <div className="col-sm-9">
-                    Dex - <span className="contract-address">Contract Address: <span className="address">{contracts.dex.options.address}</span></span>
+                    <h1 className="header-title">
+                        Dex - <span className="contract-address">Contract Address: <span className="address">{contracts.dex.options.address}</span></span>
+                    </h1>
                 </div>
             </div>
         </header>

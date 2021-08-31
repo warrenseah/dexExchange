@@ -4,6 +4,7 @@ import Wallet from './Wallet';
 import NewOrder from './NewOrder';
 import AllOrders from './AllOrders';
 import MyOrders from './MyOrders';
+import AllTrades from "./AllTrades";
 import Footer from './Footer.js';
 
 const SIDE = {
@@ -27,6 +28,9 @@ function App({ web3, accounts, contracts }) {
 	  sell: []
   });
 
+  const [trades, setTrades] = useState([]);
+  const [listener, setListener] = useState(undefined);
+
   const getBalances = async (account, token) => {
 	const tokenDex = await contracts.dex.methods.traderBalances(account, web3.utils.fromAscii(token.ticker)).call();
 	const tokenWallet = await contracts[token.ticker].methods.balanceOf(account).call();
@@ -40,6 +44,21 @@ function App({ web3, accounts, contracts }) {
 	  ]);
 
 	  return {buy: orders[0], sell: orders[1]};
+  };
+
+  const listenToTrades = token => {
+	const tradeIds = new Set();
+	setTrades([]);
+	const listener = contracts.dex.events.NewTrade({
+		  filter: {ticker: web3.utils.fromAscii(token.ticker)},
+		  fromBlock: 0
+	  })
+	  .on('data', newTrade => {
+		if(tradeIds.has(newTrade.returnValues.tradeId)) return;
+		tradeIds.add(newTrade.returnValues.tradeId);  
+		setTrades(trades => ([...trades, newTrade.returnValues]));
+	  });
+	setListener(listener);
   };
 
   const selectToken = token => {
@@ -95,7 +114,7 @@ function App({ web3, accounts, contracts }) {
 			getBalances(accounts[0], tokens[0]),
 			getOrders(tokens[0])
 		]);
-		
+		listenToTrades(tokens[0]);
 		setTokens(tokens);
 		setOrders(orders);
 		setUser({accounts, balances, selectedToken: tokens[0]});
@@ -109,13 +128,16 @@ function App({ web3, accounts, contracts }) {
 			getBalances(user.accounts[0], user.selectedToken),
 			getOrders(user.selectedToken)
 		]);
+		listenToTrades(user.selectedToken);
 		setOrders(orders);
 		setUser(user => ({...user, balances}));
 	}
 	if(typeof user.selectedToken !== 'undefined') {
 		init();
 	}
-  }, [user.selectedToken]);
+  }, [user.selectedToken, () => {
+	  listener.unsubscribe();
+  }]);
   
   if(typeof user.selectedToken === 'undefined') {
 	  return <div>Loading...</div>;
@@ -146,6 +168,7 @@ function App({ web3, accounts, contracts }) {
 				</div>
 				{ user.selectedToken.ticker !== 'DAI' ? (
 					<div className="col-sm-8">
+						<AllTrades trades={trades} />
 						<AllOrders orders={orders} />
 						<MyOrders 
 							orders={{

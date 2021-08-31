@@ -3,6 +3,7 @@ import Header from './Header';
 import Wallet from './Wallet';
 import NewOrder from './NewOrder';
 import AllOrders from './AllOrders';
+import MyOrders from './MyOrders';
 import Footer from './Footer.js';
 
 const SIDE = {
@@ -146,6 +147,16 @@ function App({ web3, accounts, contracts }) {
 				{ user.selectedToken.ticker !== 'DAI' ? (
 					<div className="col-sm-8">
 						<AllOrders orders={orders} />
+						<MyOrders 
+							orders={{
+								buy: orders.buy.filter(
+									order => order.trader.toLowerCase() === user.accounts[0].toLowerCase()
+								),
+								sell: orders.sell.filter(
+									order => order.trader.toLowerCase() === user.accounts[0].toLowerCase()
+								)
+							}}
+						/>
 					</div>
 				) : null }
 			</div>

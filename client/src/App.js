@@ -135,9 +135,7 @@ function App({ web3, accounts, contracts }) {
 	if(typeof user.selectedToken !== 'undefined') {
 		init();
 	}
-  }, [user.selectedToken, () => {
-	  listener.unsubscribe();
-  }]);
+  }, [user.selectedToken]);
   
   if(typeof user.selectedToken === 'undefined') {
 	  return <div>Loading...</div>;

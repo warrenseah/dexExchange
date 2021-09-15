@@ -1,8 +1,8 @@
-pragma solidity 0.6.3;
-pragma experimental ABIEncoderV2;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.0;
 
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import '@openzeppelin/contracts/math/SafeMath.sol';
+import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 
 contract Dex {
 
@@ -49,7 +49,7 @@ contract Dex {
         uint date
     );
     
-    constructor() public {
+    constructor() {
         admin = msg.sender;
     }
 
@@ -139,7 +139,7 @@ contract Dex {
             amount,
             0,
             price,
-            now 
+            block.timestamp 
         ));
         
         uint i = orders.length > 0 ? orders.length - 1 : 0;
@@ -188,7 +188,7 @@ contract Dex {
                 msg.sender,
                 matched,
                 orders[i].price,
-                now
+                block.timestamp
             );
             if(side == Side.SELL) {
                 traderBalances[msg.sender][ticker] = traderBalances[msg.sender][ticker].sub(matched);
